@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>جمع | تحديات الادخار — أدواتي</title>
+<style>
+:root{
+  --primary:#298197;
+  --secondary:#614197;
+  --primary-light:#e8f3f6;
+  --secondary-light:#f0ebf8;
+  --text:#1f2937;
+  --muted:#6b7280;
+  --border:#e5e7eb;
+  --bg:#fafbfc;
+  --radius:14px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:"Segoe UI",Tahoma,Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.6;
+  min-height:100vh;
+}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer;border:none;background:none}
+
+/* ---------- Header ---------- */
+.header{
+  background:#fff;
+  border-bottom:1px solid var(--border);
+  padding:14px 20px;
+  position:sticky;top:0;z-index:50;
+}
+.header-inner{max-width:860px;margin:0 auto;display:flex;align-items:center;gap:12px}
+.logo{
+  width:42px;height:42px;border-radius:12px;
+  background:linear-gradient(135deg,var(--primary),var(--secondary));
+  color:#fff;display:flex;align-items:center;justify-content:center;
+  font-size:20px;font-weight:700;
+}
+.header h1{font-size:19px;font-weight:700}
+.header .sub{font-size:12px;color:var(--muted)}
+.save-indicator{
+  margin-inline-start:auto;display:flex;align-items:center;gap:6px;
+  font-size:12px;color:var(--muted);
+}
+.save-dot{width:8px;height:8px;border-radius:50%;background:#22c55e;transition:background .3s}
+.save-dot.saving{background:var(--secondary)}
+
+/* ---------- Layout ---------- */
+.container{max-width:860px;margin:0 auto;padding:20px 16px 80px}
+.view{display:none;animation:fadeIn .25s ease}
+.view.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ---------- Summary ---------- */
+.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:24px}
+.stat-card{
+  background:#fff;border:1px solid var(--border);border-radius:var(--radius);
+  padding:16px;text-align:center;
+}
+.stat-card .value{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums}
+.stat-card .label{font-size:13px;color:var(--muted);margin-top:2px}
+.stat-card.p .value{color:var(--primary)}
+.stat-card.s .value{color:var(--secondary)}
+
+/* ---------- Challenge cards ---------- */
+.section-title{font-size:16px;font-weight:700;margin:20px 0 12px;display:flex;align-items:center;gap:8px}
+.challenge-card{
+  background:#fff;border:1px solid var(--border);border-radius:var(--radius);
+  padding:16px;margin-bottom:12px;cursor:pointer;
+  transition:box-shadow .2s,border-color .2s;
+}
+.challenge-card:hover{box-shadow:0 4px 16px rgba(41,129,151,.12);border-color:var(--primary)}
+.challenge-card.done{opacity:.75}
+.ch-top{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.ch-icon{
+  width:40px;height:40px;border-radius:10px;flex-shrink:0;
+  background:var(--primary-light);color:var(--primary);
+  display:flex;align-items:center;justify-content:center;
+}
+.ch-name{font-weight:700;font-size:15px;flex:1}
+.badge{
+  font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600;white-space:nowrap;
+}
+.badge.active{background:var(--primary-light);color:var(--primary)}
+.badge.completed{background:var(--secondary-light);color:var(--secondary)}
+.progress-wrap{
+  height:10px;background:#eef1f4;border-radius:20px;overflow:hidden;margin:8px 0 6px;
+}
+.progress-bar{
+  height:100%;border-radius:20px;
+  background:linear-gradient(90deg,var(--primary),var(--secondary));
+  transition:width .5s ease;min-width:0;
+}
+.progress-bar.full{background:var(--secondary)}
+.ch-meta{display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}
+.ch-meta .pct{color:var(--secondary);font-weight:700}
+
+/* ---------- Empty state ---------- */
+.empty{
+  text-align:center;padding:48px 20px;color:var(--muted);
+  border:1.5px dashed var(--border);border-radius:var(--radius);background:#fff;
+}
+.empty svg{opacity:.4;margin-bottom:12px}
+
+/* ---------- Buttons ---------- */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:11px 20px;border-radius:10px;font-weight:600;font-size:14px;
+  transition:opacity .2s,transform .1s;
+}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-primary:hover{opacity:.9}
+.btn-secondary{background:var(--secondary);color:#fff}
+.btn-secondary:hover{opacity:.9}
+.btn-outline{background:#fff;border:1.5px solid var(--primary);color:var(--primary)}
+.btn-outline:hover{background:var(--primary-light)}
+.btn-ghost{color:var(--muted)}
+.btn-ghost:hover{background:#f3f4f6}
+.btn-danger{background:#fff;border:1.5px solid #dc2626;color:#dc2626}
+.btn-danger:hover{background:#fef2f2}
+.btn-block{width:100%}
+.btn-sm{padding:7px 14px;font-size:13px;border-radius:8px}
+.fab{
+  position:fixed;bottom:22px;left:22px;z-index:60;
+  width:56px;height:56px;border-radius:50%;
+  background:var(--secondary);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 6px 18px rgba(97,65,151,.4);
+  transition:transform .15s;
+}
+.fab:hover{transform:scale(1.07)}
+
+/* ---------- Detail ---------- */
+.back-btn{display:inline-flex;align-items:center;gap:6px;color:var(--primary);font-weight:600;font-size:14px;margin-bottom:14px}
+.detail-header{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px}
+.detail-header h2{font-size:19px;margin-bottom:4px}
+.detail-header .freq{font-size:13px;color:var(--muted);margin-bottom:14px}
+.big-numbers{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;text-align:center}
+.big-num .n{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums}
+.big-num .l{font-size:12px;color:var(--muted)}
+.big-num.p .n{color:var(--primary)}
+.big-num.s .n{color:var(--secondary)}
+.detail-progress{height:14px;border-radius:20px;background:#eef1f4;overflow:hidden;margin:16px 0 6px}
+.detail-progress .bar{height:100%;background:linear-gradient(90deg,var(--primary),var(--secondary));border-radius:20px;transition:width .5s}
+.pct-label{text-align:center;font-size:13px;color:var(--secondary);font-weight:700;margin-bottom:14px}
+.suggest{
+  background:var(--secondary-light);color:var(--secondary);
+  font-size:13px;padding:10px 14px;border-radius:10px;text-align:center;font-weight:600;
+}
+.action-row{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0}
+.action-row .btn{flex:1;min-width:120px}
+
+/* ---------- History ---------- */
+.history-item{
+  background:#fff;border:1px solid var(--border);border-radius:12px;
+  padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;
+}
+.h-ic{
+  width:36px;height:36px;border-radius:9px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+}
+.h-ic.in{background:var(--primary-light);color:var(--primary)}
+.h-ic.out{background:var(--secondary-light);color:var(--secondary)}
+.h-body{flex:1;min-width:0}
+.h-note{font-size:14px;font-weight:600}
+.h-date{font-size:12px;color:var(--muted)}
+.h-amount{font-weight:700;font-size:15px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.h-amount.in{color:var(--primary)}
+.h-amount.out{color:var(--secondary)}
+.h-actions{display:flex;gap:4px}
+.icon-btn{
+  width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+  color:var(--muted);opacity:0;transition:opacity .2s,background .2s;
+}
+.history-item:hover .icon-btn,.history-item:focus-within .icon-btn{opacity:1}
+.icon-btn:hover{background:#f3f4f6;color:var(--text)}
+
+/* ---------- Modal ---------- */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(17,24,39,.5);z-index:100;
+  display:none;align-items:flex-end;justify-content:center;
+}
+.modal-overlay.open{display:flex}
+.modal{
+  background:#fff;width:100%;max-width:520px;
+  border-radius:18px 18px 0 0;max-height:92vh;overflow-y:auto;
+  animation:slideUp .3s ease;padding:20px;
+}
+@media(min-width:540px){
+  .modal-overlay{align-items:center;padding:20px}
+  .modal{border-radius:18px}
+}
+@keyframes slideUp{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+.modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.modal-head h3{font-size:17px}
+.modal-close{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.modal-close:hover{background:#f3f4f6}
+
+/* ---------- Forms ---------- */
+.field{margin-bottom:14px}
+.field label{display:block;font-size:13px;font-weight:600;margin-bottom:6px}
+.field input,.field select,.field textarea{
+  width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;
+  font-size:15px;background:#fff;transition:border-color .2s;
+}
+.field input:focus,.field select:focus,.field textarea:focus{
+  outline:none;border-color:var(--primary);
+}
+.freq-options{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.freq-opt{
+  border:1.5px solid var(--border);border-radius:10px;padding:10px 6px;
+  text-align:center;font-size:14px;font-weight:600;color:var(--muted);
+  transition:all .2s;cursor:pointer;background:#fff;
+}
+.freq-opt.selected{border-color:var(--primary);color:var(--primary);background:var(--primary-light)}
+.templates{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:16px}
+.tpl{
+  border:1.5px solid var(--border);border-radius:12px;padding:14px 10px;text-align:center;
+  cursor:pointer;transition:all .2s;background:#fff;
+}
+.tpl:hover{border-color:var(--secondary);background:var(--secondary-light)}
+.tpl .t-name{font-weight:700;font-size:14px;color:var(--secondary)}
+.tpl .t-info{font-size:12px;color:var(--muted);margin-top:2px}
+.divider{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:13px;margin:6px 0 16px}
+.divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--border)}
+.form-error{color:#dc2626;font-size:13px;margin-bottom:10px;display:none}
+
+.toast{
+  position:fixed;bottom:24px;right:50%;transform:translateX(50%) translateY(20px);
+  background:var(--text);color:#fff;padding:11px 22px;border-radius:10px;
+  font-size:14px;opacity:0;pointer-events:none;transition:all .3s;z-index:200;
+}
+.toast.show{opacity:1;transform:translateX(50%) translateY(0)}
+@media(max-width:480px){
+  .header h1{font-size:17px}
+  .big-num .n{font-size:17px}
+}
+</style>
+<base target="_blank">
+</head>
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <div class="logo">ج</div>
+    <div>
+      <h1>جمع</h1>
+      <div class="sub">تحديات الادخار · من أدواتي</div>
+    </div>
+    <div class="save-indicator"><span class="save-dot" id="saveDot"></span><span id="saveText">محفوظ</span></div>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- ============ HOME VIEW ============ -->
+  <div class="view active" id="view-home">
+    <div class="summary-grid">
+      <div class="stat-card p"><div class="value" id="sumSaved">0</div><div class="label">إجمالي مدخراتك (ر.س)</div></div>
+      <div class="stat-card s"><div class="value" id="sumTarget">0</div><div class="label">إجمالي المستهدف (ر.س)</div></div>
+      <div class="stat-card"><div class="value" id="sumChallenges">0</div><div class="label">التحديات النشطة</div></div>
+    </div>
+
+    <div class="section-title">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5z" fill="var(--primary)"/><path d="M2 12l10 5 10-5" stroke="var(--secondary)" stroke-width="2" fill="none"/></svg>
+      تحدياتي
+    </div>
+    <div id="challengeList"></div>
+    <div class="empty" id="emptyState" style="display:none">
+      <svg width="56" height="56" viewBox="0 0 24 24" fill="none"><path d="M19 7h-1V6a3 3 0 00-3-3H9a3 3 0 00-3 3v1H5a2 2 0 00-2 2v9a3 3 0 003 3h12a3 3 0 003-3V9a2 2 0 00-2-2zM9 6h6v1H9V6z" stroke="currentColor" stroke-width="1.5"/></svg>
+      <div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:4px">لا توجد تحديات بعد</div>
+      <div style="font-size:13px">ابدأ أول تحدي ادخار لك بالضغط على زر «تحدي جديد»</div>
+    </div>
+  </div>
+
+  <!-- ============ DETAIL VIEW ============ -->
+  <div class="view" id="view-detail">
+    <button class="back-btn" onclick="showView('home')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      عودة للتحديات
+    </button>
+    <div id="detailContent"></div>
+
+    <div class="section-title">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 21a9 9 0 119-9" stroke="var(--primary)" stroke-width="1.8" fill="none"/><path d="M12 12l4-4" stroke="var(--secondary)" stroke-width="1.8" stroke-linecap="round"/></svg>
+      سجل العمليات
+    </div>
+    <div id="historyList"></div>
+    <div class="empty" id="historyEmpty" style="display:none;padding:28px 16px">
+      <div style="font-size:14px">لا توجد عمليات بعد — سجّل أول عملية ادخار</div>
+    </div>
+  </div>
+
+</div>
+
+<button class="fab" onclick="openCreateModal()" title="تحدي جديد" aria-label="تحدي جديد">
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M12.07 2.03c.5 0 .9.4.9.9v8.17h8.1c.5 0 .9.4.9.9s-.4.9-.9.9h-8.1v8.1c0 .5-.4.9-.9.9s-.9-.4-.9-.9v-8.1H3.07c-.5 0-.9-.4-.9-.9s.4-.9.9-.9h8.11V2.93c0-.5.4-.9.89-.9z" fill="currentColor"/></svg>
+</button>
+
+<!-- ============ CREATE / EDIT CHALLENGE MODAL ============ -->
+<div class="modal-overlay" id="modalChallenge" onclick="if(event.target===this)closeModal('modalChallenge')">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="challengeModalTitle">تحدي جديد</h3>
+      <button class="modal-close" onclick="closeModal('modalChallenge')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+
+    <div id="tplSection">
+      <div style="font-size:13px;color:var(--muted);margin-bottom:8px">تحديات جاهزة — اختر واحدًا للبدء السريع:</div>
+      <div class="templates" id="templatesGrid"></div>
+      <div class="divider">أو أنشئ تحديًا مخصصًا</div>
+    </div>
+
+    <div class="form-error" id="chError">يرجى إدخال قيم صحيحة</div>
+    <div class="field"><label>اسم التحدي</label><input type="text" id="chName" placeholder="مثال: تحدي رحلة الصيف" maxlength="40"></div>
+    <div class="field"><label>المبلغ المستهدف (ر.س)</label><input type="number" id="chTarget" min="1" step="any" placeholder="5000"></div>
+    <div class="field"><label>المدة (أيام)</label><input type="number" id="chDuration" min="1" step="1" placeholder="90"></div>
+    <div class="field">
+      <label>طريقة الادخار</label>
+      <div class="freq-options" id="freqOptions">
+        <div class="freq-opt selected" data-freq="daily">يومي</div>
+        <div class="freq-opt" data-freq="weekly">أسبوعي</div>
+        <div class="freq-opt" data-freq="monthly">شهري</div>
+      </div>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="saveChallenge()">حفظ التحدي</button>
+  </div>
+</div>
+
+<!-- ============ TRANSACTION MODAL ============ -->
+<div class="modal-overlay" id="modalTx" onclick="if(event.target===this)closeModal('modalTx')">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="txModalTitle">تسجيل عملية</h3>
+      <button class="modal-close" onclick="closeModal('modalTx')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="form-error" id="txError">يرجى إدخال مبلغ صحيح أكبر من صفر</div>
+    <div class="field">
+      <label>نوع العملية</label>
+      <div class="freq-options" id="txTypeOptions">
+        <div class="freq-opt selected" data-type="deposit">إيداع ادخار</div>
+        <div class="freq-opt" data-type="withdraw">سحب</div>
+      </div>
+    </div>
+    <div class="field"><label>المبلغ (ر.س)</label><input type="number" id="txAmount" min="0.01" step="any" placeholder="100"></div>
+    <div class="field"><label>ملاحظة (اختياري)</label><input type="text" id="txNote" placeholder="مثال: ادخار يوم الجمعة" maxlength="60"></div>
+    <button class="btn btn-primary btn-block" onclick="saveTx()">تسجيل</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+"use strict";
+const STORAGE_KEY = "jama3_challenges_v1";
+const CURRENCY = "ر.س";
+let state = { challenges: [] };
+let editingChallengeId = null;
+let currentChallengeId = null;
+let editingTxId = null;
+let selectedFreq = "daily";
+let txType = "deposit";
+
+/* ---------- Icons ---------- */
+const icons = {
+  wallet: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M19 7h-1V6a3 3 0 00-3-3H9a3 3 0 00-3 3v1H5a2 2 0 00-2 2v9a3 3 0 003 3h12a3 3 0 003-3V9a2 2 0 00-2-2zM9 6h6v1H9V6z" fill="currentColor"/></svg>',
+  check: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M19.3 5.9c.35-.35.92-.35 1.27 0 .36.35.36.93 0 1.27L9.66 18.1c-.35.35-.92.35-1.27 0l-4.96-4.96c-.35-.35-.35-.92 0-1.27.35-.35.93-.35 1.27 0l4.33 4.32L19.3 5.9z" fill="currentColor"/></svg>',
+  edit: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M18 3.1c.84 0 1.64.33 2.23.93.6.6.93 1.4.93 2.24 0 .83-.33 1.64-.93 2.23l-2.41 2.42-8.49 8.48a4.5 4.5 0 01-1.86 1.13l-2.66.66a.87.87 0 01-.86-.24.87.87 0 01-.24-.86l.67-2.66c.21-.85.67-1.62 1.3-2.25L13.5 4.9l.43-.43c.58-.58 1.36-.91 2.17-.93l.03-.84H19v-.6z" fill="currentColor" opacity=".9"/></svg>',
+  trash: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M8.1 3c0-.5.4-.9.9-.9h6c.5 0 .9.4.9.9s-.4.9-.9.9H9c-.5 0-.9-.4-.9-.9z" fill="currentColor"/><path d="M10 15.9c-.5 0-.9-.4-.9-.9v-5c0-.5.4-.9.9-.9s.9.4.9.9v5c0 .5-.4.9-.9.9zm3.1-.9c0 .5.4.9.9.9s.9-.4.9-.9v-5c0-.5-.4-.9-.9-.9s-.9.4-.9.9v5z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="M2.1 6c0-.5.4-.9.9-.9h15.9c.5 0 .9.4.9.9s-.4.9-.9.9h-1.2l-.98 11.8a2.6 2.6 0 01-2.6 2.4H7.55a2.6 2.6 0 01-2.6-2.4L4.17 6.9H3c-.5 0-.9-.4-.9-.9zm3.9.9h12l-.97 11.65c-.03.3-.27.55-.58.55H7.55c-.31 0-.55-.25-.58-.55L6.01 6.9z" fill="currentColor"/></svg>',
+  down: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 3.9c.5 0 .9.4.9.9v9.2l3.24-3.23c.35-.35.92-.36 1.27-.01.36.35.36.92.01 1.27l-4.77 4.78a.9.9 0 01-1.27 0l-4.78-4.78c-.35-.35-.35-.92 0-1.27.35-.35.92-.35 1.27 0l3.24 3.24V4.8c0-.5.4-.9.9-.9z" fill="currentColor"/></svg>',
+  up: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 20.1c-.5 0-.9-.4-.9-.9V9.99L7.86 13.2a.9.9 0 01-1.27 0 .9.9 0 010-1.27l4.77-4.78c.35-.35.92-.35 1.27 0l4.78 4.78c.35.35.35.92 0 1.27-.35.35-.92.35-1.27 0l-3.24-3.24v9.29c0 .5-.4.9-.9.9z" fill="currentColor"/></svg>'
+};
+
+/* ---------- Ready templates ---------- */
+const templates = [
+  { name:"تحدي الألف", target:1000, duration:30,  freq:"daily",  info:"33 ر.س يوميًا لمدة شهر" },
+  { name:"تحدي الخمسة آلاف", target:5000, duration:90, freq:"daily", info:"56 ر.س يوميًا لمدة 3 أشهر" },
+  { name:"تحدي العشرة آلاف", target:10000, duration:180, freq:"weekly", info:"385 ر.س أسبوعيًا لمدة 6 أشهر" },
+  { name:"صندوق الطوارئ", target:2000, duration:60, freq:"weekly", info:"233 ر.س أسبوعيًا لمدة شهرين" }
+];
+
+const freqLabel = { daily:"ادخار يومي", weekly:"ادخار أسبوعي", monthly:"ادخار شهري" };
+
+/* ---------- Persistence ---------- */
+function load(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw) state = JSON.parse(raw);
+  }catch(e){ state = { challenges: [] }; }
+}
+function persist(){
+  const dot = document.getElementById("saveDot");
+  const txt = document.getElementById("saveText");
+  dot.classList.add("saving"); txt.textContent = "جارٍ الحفظ…";
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
+  setTimeout(()=>{ dot.classList.remove("saving"); txt.textContent = "محفوظ تلقائيًا"; }, 500);
+}
+
+/* ---------- Helpers ---------- */
+function fmt(n){
+  return (Math.round(n*100)/100).toLocaleString("en-US",{maximumFractionDigits:2});
+}
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+function getChallenge(id){ return state.challenges.find(c=>c.id===id); }
+function savedOf(c){
+  return c.transactions.reduce((s,t)=> s + (t.type==="deposit"? t.amount : -t.amount), 0);
+}
+function pctOf(c){
+  if(!c.target) return 0;
+  return Math.max(0, Math.min(100, Math.round(savedOf(c)/c.target*100)));
+}
+function isDone(c){ return c.completed || savedOf(c) >= c.target; }
+function periodsCount(c){
+  const days = Math.max(1, c.duration);
+  if(c.freq==="daily") return days;
+  if(c.freq==="weekly") return Math.max(1, Math.ceil(days/7));
+  return Math.max(1, Math.ceil(days/30));
+}
+function suggestedPerPeriod(c){
+  return Math.ceil(c.target / periodsCount(c));
+}
+function daysLeft(c){
+  const end = c.createdAt + c.duration*86400000;
+  return Math.max(0, Math.ceil((end - Date.now())/86400000));
+}
+function esc(s){
+  return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+function toast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.classList.add("show");
+  clearTimeout(t._h); t._h = setTimeout(()=>t.classList.remove("show"), 2200);
+}
+
+/* ---------- Views ---------- */
+window.showView = function(name){
+  document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
+  document.getElementById("view-"+name).classList.add("active");
+  window.scrollTo({top:0});
+};
+
+/* ---------- Render home ---------- */
+function renderHome(){
+  const list = document.getElementById("challengeList");
+  const empty = document.getElementById("emptyState");
+  let totalSaved = 0, totalTarget = 0, activeCount = 0;
+  state.challenges.forEach(c=>{
+    totalSaved += Math.max(0, savedOf(c));
+    if(!isDone(c)){ totalTarget += c.target; activeCount++; }
+  });
+  document.getElementById("sumSaved").textContent = fmt(totalSaved);
+  document.getElementById("sumTarget").textContent = fmt(totalTarget);
+  document.getElementById("sumChallenges").textContent = activeCount;
+
+  if(!state.challenges.length){
+    list.innerHTML = ""; empty.style.display = "block"; return;
+  }
+  empty.style.display = "none";
+
+  list.innerHTML = state.challenges.map(c=>{
+    const p = pctOf(c), done = isDone(c);
+    return `
+    <div class="challenge-card ${done?"done":""}" onclick="openDetail('${c.id}')">
+      <div class="ch-top">
+        <div class="ch-icon">${done?icons.check:icons.wallet}</div>
+        <div class="ch-name">${esc(c.name)}</div>
+        <span class="badge ${done?"completed":"active"}">${done?"مكتمل":"نشط"}</span>
+      </div>
+      <div class="progress-wrap"><div class="progress-bar ${p>=100?"full":""}" style="width:${p}%"></div></div>
+      <div class="ch-meta">
+        <span>وفر <b style="color:var(--primary)">${fmt(savedOf(c))}</b> من ${fmt(c.target)} ${CURRENCY}</span>
+        <span class="pct">${p}%</span>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+/* ---------- Render detail ---------- */
+window.openDetail = function(id){
+  currentChallengeId = id;
+  renderDetail();
+  showView("detail");
+};
+function renderDetail(){
+  const c = getChallenge(currentChallengeId);
+  if(!c){ showView("home"); return; }
+  const saved = Math.max(0, savedOf(c));
+  const remaining = Math.max(0, c.target - saved);
+  const p = pctOf(c);
+  const done = isDone(c);
+  const sug = suggestedPerPeriod(c);
+  const dl = daysLeft(c);
+
+  document.getElementById("detailContent").innerHTML = `
+    <div class="detail-header">
+      <h2>${esc(c.name)} ${done?'<span class="badge completed">مكتمل</span>':""}</h2>
+      <div class="freq">${freqLabel[c.freq]} · المدة ${c.duration} يوم${dl>0&&!done?` · المتبقي ${dl} يوم`:""}</div>
+      <div class="big-numbers">
+        <div class="big-num p"><div class="n">${fmt(saved)}</div><div class="l">المدخر (ر.س)</div></div>
+        <div class="big-num s"><div class="n">${fmt(c.target)}</div><div class="l">المستهدف (ر.س)</div></div>
+        <div class="big-num"><div class="n">${fmt(remaining)}</div><div class="l">المتبقي (ر.س)</div></div>
+      </div>
+      <div class="detail-progress"><div class="bar" style="width:${p}%"></div></div>
+      <div class="pct-label">نسبة الإنجاز: ${p}%</div>
+      ${done?"":`<div class="suggest">المطلوب ادخاره في كل فترة (${freqLabel[c.freq].replace("ادخار ","")}): ${fmt(sug)} ${CURRENCY}</div>`}
+      <div class="action-row">
+        <button class="btn btn-primary" onclick="openTxModal()">تسجيل عملية</button>
+        ${done?"":`<button class="btn btn-secondary" onclick="completeChallenge()">إكمال التحدي</button>`}
+        <button class="btn btn-outline" onclick="openEditChallenge()">تعديل</button>
+        <button class="btn btn-danger" onclick="deleteChallenge()">حذف</button>
+      </div>
+    </div>`;
+
+  const hl = document.getElementById("historyList");
+  const hEmpty = document.getElementById("historyEmpty");
+  if(!c.transactions.length){ hl.innerHTML = ""; hEmpty.style.display = "block"; return; }
+  hEmpty.style.display = "none";
+  const txs = c.transactions.slice().sort((a,b)=> b.date - a.date);
+  hl.innerHTML = txs.map(t=>{
+    const d = new Date(t.date);
+    const dateStr = d.toLocaleDateString("ar-EG-u-nu-latn",{year:"numeric",month:"long",day:"numeric"}) + " · " + d.toLocaleTimeString("ar-EG-u-nu-latn",{hour:"2-digit",minute:"2-digit"});
+    const isIn = t.type === "deposit";
+    return `
+    <div class="history-item">
+      <div class="h-ic ${isIn?"in":"out"}">${isIn?icons.down:icons.up}</div>
+      <div class="h-body">
+        <div class="h-note">${esc(t.note) || (isIn?"إيداع":"سحب")}</div>
+        <div class="h-date">${dateStr}</div>
+      </div>
+      <div class="h-amount ${isIn?"in":"out"}">${isIn?"+":"−"} ${fmt(t.amount)}</div>
+      <div class="h-actions">
+        <button class="icon-btn" title="تعديل" onclick="editTx('${t.id}')">${icons.edit}</button>
+        <button class="icon-btn" title="حذف" onclick="deleteTx('${t.id}')">${icons.trash}</button>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+/* ---------- Challenge create / edit ---------- */
+function renderTemplates(){
+  document.getElementById("templatesGrid").innerHTML = templates.map((t,i)=>`
+    <div class="tpl" onclick="applyTemplate(${i})">
+      <div class="t-name">${esc(t.name)}</div>
+      <div class="t-info">${fmt(t.target)} ${CURRENCY} · ${t.duration} يوم</div>
+      <div class="t-info">${esc(t.info)}</div>
+    </div>`).join("");
+}
+window.applyTemplate = function(i){
+  const t = templates[i];
+  document.getElementById("chName").value = t.name;
+  document.getElementById("chTarget").value = t.target;
+  document.getElementById("chDuration").value = t.duration;
+  setFreq(t.freq);
+  toast("تم تعبئة بيانات «"+t.name+"» — اضغط حفظ");
+};
+window.openCreateModal = function(){
+  editingChallengeId = null;
+  document.getElementById("challengeModalTitle").textContent = "تحدي جديد";
+  document.getElementById("tplSection").style.display = "block";
+  document.getElementById("chError").style.display = "none";
+  document.getElementById("chName").value = "";
+  document.getElementById("chTarget").value = "";
+  document.getElementById("chDuration").value = "";
+  setFreq("daily");
+  document.getElementById("modalChallenge").classList.add("open");
+};
+window.openEditChallenge = function(){
+  const c = getChallenge(currentChallengeId);
+  if(!c) return;
+  editingChallengeId = c.id;
+  document.getElementById("challengeModalTitle").textContent = "تعديل التحدي";
+  document.getElementById("tplSection").style.display = "none";
+  document.getElementById("chError").style.display = "none";
+  document.getElementById("chName").value = c.name;
+  document.getElementById("chTarget").value = c.target;
+  document.getElementById("chDuration").value = c.duration;
+  setFreq(c.freq);
+  document.getElementById("modalChallenge").classList.add("open");
+};
+function setFreq(f){
+  selectedFreq = f;
+  document.querySelectorAll("#freqOptions .freq-opt").forEach(el=>{
+    el.classList.toggle("selected", el.dataset.freq === f);
+  });
+}
+window.saveChallenge = function(){
+  const name = document.getElementById("chName").value.trim();
+  const target = parseFloat(document.getElementById("chTarget").value);
+  const duration = parseInt(document.getElementById("chDuration").value, 10);
+  const err = document.getElementById("chError");
+  if(!name || !(target>0) || !(duration>0)){
+    err.textContent = "يرجى إدخال اسم والمبلغ المستهدف والمدة بقيم صحيحة";
+    err.style.display = "block"; return;
+  }
+  if(editingChallengeId){
+    const c = getChallenge(editingChallengeId);
+    if(c){
+      c.name = name; c.target = target; c.duration = duration; c.freq = selectedFreq;
+      if(c.completed && savedOf(c) < c.target) c.completed = false;
+    }
+    toast("تم تعديل التحدي");
+  }else{
+    state.challenges.push({
+      id: uid(), name, target, duration, freq: selectedFreq,
+      createdAt: Date.now(), completed: false, transactions: []
+    });
+    toast("تم إنشاء التحدي — بالتوفيق!");
+  }
+  persist();
+  closeModal("modalChallenge");
+  editingChallengeId ? renderDetail() : renderHome();
+};
+window.deleteChallenge = function(){
+  const c = getChallenge(currentChallengeId);
+  if(!c) return;
+  if(!confirm('حذف تحدي «'+c.name+'» نهائيًا مع جميع عملياته؟')) return;
+  state.challenges = state.challenges.filter(x=>x.id!==c.id);
+  persist(); renderHome(); showView("home");
+  toast("تم حذف التحدي");
+};
+window.completeChallenge = function(){
+  const c = getChallenge(currentChallengeId);
+  if(!c) return;
+  if(!confirm("تأكيد إكمال التحدي «"+c.name+"»؟")) return;
+  c.completed = true;
+  persist(); renderDetail();
+  toast("مبارك! أكملت التحدي");
+};
+
+/* ---------- Transactions ---------- */
+window.openTxModal = function(txId){
+  editingTxId = txId || null;
+  const c = getChallenge(currentChallengeId);
+  if(!c) return;
+  const err = document.getElementById("txError");
+  err.style.display = "none";
+  let t = null;
+  if(txId){ t = c.transactions.find(x=>x.id===txId); }
+  document.getElementById("txModalTitle").textContent = t ? "تعديل عملية" : "تسجيل عملية";
+  setTxType(t ? t.type : "deposit");
+  document.getElementById("txAmount").value = t ? t.amount : "";
+  document.getElementById("txNote").value = t ? (t.note||"") : "";
+  document.getElementById("modalTx").classList.add("open");
+};
+function setTxType(type){
+  txType = type;
+  document.querySelectorAll("#txTypeOptions .freq-opt").forEach(el=>{
+    el.classList.toggle("selected", el.dataset.type === type);
+  });
+}
+window.saveTx = function(){
+  const amount = parseFloat(document.getElementById("txAmount").value);
+  const note = document.getElementById("txNote").value.trim();
+  const err = document.getElementById("txError");
+  const c = getChallenge(currentChallengeId);
+  if(!c) return;
+  if(!(amount > 0)){
+    err.textContent = "يرجى إدخال مبلغ صحيح أكبر من صفر";
+    err.style.display = "block"; return;
+  }
+  if(txType === "withdraw" && editingTxId === null && savedOf(c) - amount < 0){
+    err.textContent = "المبلغ المسحوب أكبر من إجمالي المدخرات ("+fmt(savedOf(c))+")";
+    err.style.display = "block"; return;
+  }
+  if(editingTxId){
+    const t = c.transactions.find(x=>x.id===editingTxId);
+    if(t){ t.amount = amount; t.note = note; t.type = txType; }
+    toast("تم تعديل العملية");
+  }else{
+    c.transactions.push({ id: uid(), type: txType, amount, note, date: Date.now() });
+    toast(txType==="deposit" ? "تم تسجيل الإيداع" : "تم تسجيل السحب");
+  }
+  persist();
+  closeModal("modalTx");
+  renderDetail(); renderHome();
+};
+window.editTx = function(id){ openTxModal(id); };
+window.deleteTx = function(id){
+  const c = getChallenge(currentChallengeId);
+  if(!c) return;
+  if(!confirm("حذف هذه العملية من السجل؟")) return;
+  c.transactions = c.transactions.filter(t=>t.id!==id);
+  persist(); renderDetail(); renderHome();
+  toast("تم حذف العملية");
+};
+
+/* ---------- Modal helpers ---------- */
+window.closeModal = function(id){
+  document.getElementById(id).classList.remove("open");
+};
+
+/* ---------- Frequency / tx type click handlers ---------- */
+document.querySelectorAll("#freqOptions .freq-opt").forEach(el=>{
+  el.addEventListener("click", ()=> setFreq(el.dataset.freq));
+});
+document.querySelectorAll("#txTypeOptions .freq-opt").forEach(el=>{
+  el.addEventListener("click", ()=> setTxType(el.dataset.type));
+});
+
+/* ---------- Init ---------- */
+load();
+renderTemplates();
+renderHome();
+})();
+</script>
+</body>
+</html>
